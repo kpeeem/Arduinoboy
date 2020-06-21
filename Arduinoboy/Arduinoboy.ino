@@ -75,6 +75,27 @@
  *   (at your option) any later version.                                   *
  *                                                                         *
  ***************************************************************************/
+
+/*Display*******************************************************************/
+#if defined (__MK20DX256__) || defined (__MK20DX128__) || defined (__MKL26Z64__)
+  #include <U8x8lib.h>
+  #include <Wire.h>
+  U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
+#elif defined (__AVR_ATmega32U4__)
+  #include <U8x8lib.h>
+  #include <Wire.h>
+  U8X8_SH1106_128X64_NONAME_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE);
+#else
+  #include <U8x8lib.h>
+  #include <Wire.h>
+  U8X8_SSD1306_128X32_UNIVISION_HW_I2C u8x8(/* reset=*/ U8X8_PIN_NONE); 
+
+//  #include <U8g2lib.h>
+//  #include <Wire.h>
+//  U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+#endif
+/***************************************************************************/
+
 #define MEM_MAX 65
 #define NUMBER_OF_MODES 7    //Right now there are 7 modes, Might be more in the future
 
@@ -165,11 +186,11 @@ byte memory[MEM_MAX];
 
 int pinGBClock     = 16;    // Analog In 0 - clock out to gameboy
 int pinGBSerialOut = 17;    // Analog In 1 - serial data to gameboy
-int pinGBSerialIn  = 18;    // Analog In 2 - serial data from gameboy
+int pinGBSerialIn  = 15;    // Analog In 2 - serial data from gameboy
 int pinMidiInputPower = 0; // Not used!
 int pinStatusLed = 13; // Status LED
-int pinLeds[] = {23,22,21,20,4,13}; // LED Pins
-int pinButtonMode = 2; //toggle button for selecting the mode
+int pinLeds[] = {23,22,21,20,4,3}; // LED Pins
+int pinButtonMode = 5; //toggle button for selecting the mode
 
 HardwareSerial *serial = &Serial1;
 
@@ -188,9 +209,9 @@ int pinGBClock     = A0;    // Analog In 0 - clock out to gameboy
 int pinGBSerialOut = A1;    // Analog In 1 - serial data to gameboy
 int pinGBSerialIn  = A2;    // Analog In 2 - serial data from gameboy
 int pinMidiInputPower = 4; // power pin for midi input opto-isolator
-int pinStatusLed = 13; // Status LED
-int pinLeds[] = {12,11,10,9,8,13}; // LED Pins
-int pinButtonMode = 3; //toggle button for selecting the mode
+int pinStatusLed = 8; // Status LED
+int pinLeds[] = {8,9,10,16,14,15}; // LED Pins
+int pinButtonMode = 5; //toggle button for selecting the mode
 
 HardwareSerial *serial = &Serial1;
 
@@ -422,6 +443,33 @@ uint8_t mapQueueWaitUsb = 5; //5ms - Needs to be longer because message packet i
 #define GB_MIDI_DELAY 500 //Microseconds to delay the sending of a byte to gb
 
 void setup() {
+/*
+  Init Display
+*/
+#if defined (__MK20DX256__) || defined (__MK20DX128__) || defined (__MKL26Z64__)
+  u8x8.begin();
+  u8x8.clear();       // clear the internal memory
+  u8x8.setFont(u8x8_font_8x13B_1x2_f); // choose a suitable font
+  u8x8.draw1x2String(3, 2, "ArduinoBoy");
+#elif defined (__AVR_ATmega32U4__)
+  u8x8.begin();
+  u8x8.clear();       // clear the internal memory
+  u8x8.setFont(u8x8_font_8x13B_1x2_f); // choose a suitable font
+  u8x8.draw1x2String(3, 2, "ArduinoBoy");
+#else
+  u8x8.begin();
+  u8x8.clear();       // clear the internal memory
+  u8x8.setFont(u8x8_font_8x13B_1x2_f); // choose a suitable font
+  u8x8.draw1x2String(3, 0, "ArduinoBoy");
+
+//  u8g2.begin();
+//  u8g2.clearBuffer();         // clear the internal memory
+//  u8g2.setFont(u8g2_font_8x13B_tr); // choose a suitable font
+//  u8g2.drawStr(12,27, "ArduinoBoy");  // write something to the internal memory
+//  u8g2.sendBuffer();
+
+#endif
+
 /*
   Init Memory
 */

@@ -4,10 +4,89 @@
    and delays for a period of time to reduce jitter behavior from the mode
    changing too fast.
  */
+
+#if defined (__MK20DX256__) || defined (__MK20DX128__) || defined (__MKL26Z64__)
+  static const char* modesMap[] = {
+    "LSDJ Slave",
+    "LSDJ Master",
+    "LSDJ Keyboard",
+    "Nanoloop",
+    "Midi Gb",
+    "LSDJ Map",
+    "LSDJ midi Out"
+  };
+#elif defined (__AVR_ATmega32U4__)
+  const char LSDJ_Slave[] PROGMEM = "LSDJ Slave";
+  const char LSDJ_Mstr[] PROGMEM = "LSDJ Master";
+  const char LSDJ_Kb[] PROGMEM = "LSDJ Keyboard";
+  const char Nanoloop[] PROGMEM = "Nanoloop";
+  const char MidiGb[] PROGMEM = "Midi Gb";
+  const char LSDJ_Map[] PROGMEM = "LSDJ Map";
+  const char LSDJ_mOut[] PROGMEM = "LSDJ midi Out";
+  
+  const char* const modesMap[] PROGMEM = {
+    LSDJ_Slave,
+    LSDJ_Mstr,
+    LSDJ_Kb,
+    Nanoloop,
+    MidiGb,
+    LSDJ_Map,
+    LSDJ_mOut
+  };
+  
+  char arrayBuf[20];  // создаём буфер
+#else
+  const char LSDJ_Slave[] PROGMEM = "LSDJ Slave";
+  const char LSDJ_Mstr[] PROGMEM = "LSDJ Master";
+  const char LSDJ_Kb[] PROGMEM = "LSDJ Keyboard";
+  const char Nanoloop[] PROGMEM = "Nanoloop";
+  const char MidiGb[] PROGMEM = "Midi Gb";
+  const char LSDJ_Map[] PROGMEM = "LSDJ Map";
+  const char LSDJ_mOut[] PROGMEM = "LSDJ midi Out";
+  
+  const char* const modesMap[] PROGMEM = {
+    LSDJ_Slave,
+    LSDJ_Mstr,
+    LSDJ_Kb,
+    Nanoloop,
+    MidiGb,
+    LSDJ_Map,
+    LSDJ_mOut
+  };
+  
+  char arrayBuf[20];  // создаём буфер
+#endif
+
+
+   
 void showSelectedMode()
 {
   digitalWrite(pinStatusLed,LOW);
 
+  #if defined (__MK20DX256__) || defined (__MK20DX128__) || defined (__MKL26Z64__)
+    u8x8.clear();   // clear the internal memory
+    u8x8.drawString(0, 0, "Mode:");
+    u8x8.draw1x2String(0, 2, modesMap[memory[MEM_MODE]]);
+  #elif defined (__AVR_ATmega32U4__)
+    u8x8.clear();   // clear the internal memory
+    u8x8.drawString(0, 0, "Mode:");
+    strcpy_P(arrayBuf, pgm_read_byte(&modesMap[memory[MEM_MODE]])); 
+    u8x8.draw1x2String(0, 2, arrayBuf);
+  #else
+    u8x8.clear();   // clear the internal memory
+    u8x8.drawString(0, 0, "Mode:");
+    strcpy_P(arrayBuf, pgm_read_byte(&modesMap[memory[MEM_MODE]])); 
+    u8x8.drawString(0, 2, arrayBuf);
+//    u8g2.clearBuffer();         // clear the internal memory
+//    u8g2.setFont(u8g2_font_8x13B_tr); // choose a suitable font
+//    u8g2.drawStr(0,12, "Mode:");  // write something to the internal memory
+//    u8g2.setFont(u8g2_font_logisoso16_tr);
+//    strcpy_P(arrayBuf, pgm_read_byte(&modesMap[memory[MEM_MODE]]));
+//    u8g2.drawStr(0,32, arrayBuf);  
+//    
+//    u8g2.sendBuffer();          // transfer internal memory to the display
+  #endif
+  
   for(int m=0;m<3;m++) {
     switch(memory[MEM_MODE]) {
       case 0:
