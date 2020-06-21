@@ -1,4 +1,4 @@
-# Arduinoboy
+# Arduinoboy + sh1106 display
 Official ArduinoBoy Repository for serial MIDI communication to the Nintendo Gameboy.
 
 ![ScreenShot](http://trash80.net/arduinoboy/aboy1_2_0.jpg)
